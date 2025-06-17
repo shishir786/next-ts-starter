@@ -1,9 +1,9 @@
 'use client';
 
+import { AppStore, makeStore } from '@/lib/store';
 import { ChildrenProps } from '@/types';
 import { useRef } from 'react';
 import { Provider } from 'react-redux';
-import { AppStore, makeStore } from '../lib/store';
 
 export default function ReduxProvider({ children }: ChildrenProps) {
   const storeRef = useRef<AppStore>(undefined);
