@@ -11,8 +11,8 @@ export default function Footer() {
           <div className="flex flex-col">
             {/* Website logo here */}
             <Logo className="text-light" />
-            <p className="mt-4 text-gray-300">Chatmohar, Pabna, Bangladesh</p>
-            <p className="mt-2 text-gray-300">+8809647-001177</p>
+            <p className="mt-4 text-gray-300">Pabna, Bangladesh</p>
+            <p className="mt-2 text-gray-300">+8800000-000000</p>
             <div className="mt-4 flex space-x-4">
               <Link
                 target="_blank"
@@ -82,7 +82,7 @@ export default function Footer() {
           <p className="text-center text-gray-300">
             Copyright &copy; {new Date().getFullYear()} All Rights Reserved to{' '}
             <Link className="text-light" href={'/'}>
-              Natural Sefa
+              Next.ts
             </Link>{' '}
             <br /> Developed by{' '}
             <Link className="text-light" href="https://tariqul.vercel.app" target="_blank">
