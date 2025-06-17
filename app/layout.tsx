@@ -1,10 +1,12 @@
 import ClientClerkProvider from '@/components/providers/clerk-provider';
 import { ThemeProvider } from '@/components/providers/theme-provider';
 import ToasterProvider from '@/components/providers/toaster-provider';
-import { hindSiliguri, spaceGrotesk } from '@/constant/fonts';
+
 import { cn } from '@/lib/utils';
-import OfflineProvider from '@/providers/offline-provider';
-import ReduxProvider from '@/providers/redux-provider';
+
+import OfflineProvider from '@/components/providers/offline-provider';
+import ReduxProvider from '@/components/providers/redux-provider';
+import { hindSiliguri, spaceGrotesk } from '@/constant/fonts';
 import type { Metadata } from 'next';
 import 'react-phone-input-2/lib/style.css';
 import { Toaster } from 'sonner';
