@@ -4,7 +4,6 @@ import { IUser } from '@/types/user';
 import dbConnect from '../db-connect';
 
 import User from '@/models/user.model';
-import { auth } from '@clerk/nextjs/server';
 import { cache } from 'react';
 
 // create a new user
@@ -55,89 +54,5 @@ export const getUser = cache(async (clerkUserId: string) => {
   } catch (error) {
     console.error('Error fetching user:', error);
     throw error;
-  }
-});
-
-// get all user for admin
-export const getUsersForAdmin = cache(async ({ page = 1, limit = 10, search = '' }) => {
-  try {
-    await dbConnect();
-
-    // Authentication and authorization
-    const { sessionClaims } = await auth();
-    const role = sessionClaims?.role;
-
-    if (role !== 'admin') {
-      throw new Error("Don't have permission to perform this action!");
-    }
-
-    // Initialize query object
-    const query = {
-      role: { $ne: 'admin' },
-      ...(search && {
-        $or: [{ firstName: { $regex: search, $options: 'i' } }, { lastName: { $regex: search, $options: 'i' } }, { email: { $regex: search, $options: 'i' } }],
-      }),
-    };
-
-    // Execute aggregation
-    const users = await User.aggregate([
-      { $match: query },
-      {
-        $lookup: {
-          from: 'orders',
-          localField: 'email',
-          foreignField: 'email',
-          as: 'orders',
-        },
-      },
-      { $unwind: { path: '$orders', preserveNullAndEmptyArrays: true } },
-      {
-        $group: {
-          _id: '$_id',
-          firstName: { $first: '$firstName' },
-          lastName: { $first: '$lastName' },
-          email: { $first: '$email' },
-          role: { $first: '$role' },
-          createdAt: { $first: '$createdAt' },
-          updatedAt: { $first: '$updatedAt' },
-          totalOrderCount: {
-            $sum: {
-              $cond: [{ $ifNull: ['$orders', false] }, 1, 0],
-            },
-          },
-          completedOrderCount: {
-            $sum: {
-              $cond: [{ $eq: ['$orders.status', 'delivered'] }, 1, 0],
-            },
-          },
-        },
-      },
-      { $sort: { createdAt: -1 } },
-      { $skip: (page - 1) * limit },
-      { $limit: limit },
-    ]);
-
-    // Count total documents matching the query
-    const total = await User.countDocuments({
-      ...(search && query),
-    });
-
-    const totalPages = Math.ceil(total / limit);
-
-    return JSON.parse(
-      JSON.stringify({
-        users,
-        pagination: {
-          currentPage: page,
-          totalPages,
-          totalItems: total,
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
-        },
-      }),
-    );
-  } catch (error) {
-    console.error('Error fetching users:', error);
-    throw new Error('Failed to fetch users');
   }
 });
