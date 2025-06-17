@@ -40,20 +40,6 @@ A modern, feature-rich Next.js starter template with TypeScript, built with best
 - 🌐 Internationalization ready
 - 🧪 Testing setup included
 
-## 📸 Screenshots
-
-### Home Page
-
-![Home Page](https://raw.githubusercontent.com/tariqul420/next-ts-starter/main/public/screenshots/home.png)
-
-### Dashboard
-
-![Dashboard](https://raw.githubusercontent.com/tariqul420/next-ts-starter/main/public/screenshots/dashboard.png)
-
-### Authentication
-
-![Authentication](https://raw.githubusercontent.com/tariqul420/next-ts-starter/main/public/screenshots/auth.png)
-
 ## 🛠️ Getting Started
 
 ### Prerequisites
