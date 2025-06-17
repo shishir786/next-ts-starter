@@ -127,5 +127,24 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-hind-siliguri), sans-serif;
+  }
+
+  .bn {
+    font-family: var(--font-hind-siliguri), sans-serif;
+  }
+
+  .en {
+    font-family: var(--font-space-grotesk), sans-serif;
+  }
+
+  h1 {
+    @apply text-2xl font-bold;
+  }
+  h2 {
+    @apply text-xl font-bold;
+  }
+  h3 {
+    @apply text-lg font-bold;
   }
 }
