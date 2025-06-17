@@ -1,6 +1,6 @@
 # Next.js TypeScript Starter Template
 
-![Next.js TypeScript Starter](https://raw.githubusercontent.com/tariqul420/next-ts-starter/main/public/og.png)
+![Next.js TypeScript Starter](https://raw.githubusercontent.com/tariqul420/next-ts-starter/main/public/nextjs-banner.webp)
 
 A modern, feature-rich Next.js starter template with TypeScript, built with best practices and developer experience in mind. This template provides a solid foundation for building scalable web applications with a focus on performance, security, and developer experience.
 
