@@ -6,29 +6,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 
 type SearchBarProps = {
-  /** Placeholder text */
   placeholder?: string;
-  /** Class for the outer wrapper or pass directly to Input via inputClassName */
   className?: string;
-  /** Class for the <Input /> */
   inputClassName?: string;
-  /** URL query key to read/write (default: "search") */
   paramKey?: string;
-  /** Default value when URL has no value; empty removes the param */
   defaultValue?: string;
-  /** Debounce time (ms) for URL updates */
   debounceMs?: number;
-  /** Use router.replace to avoid stacking browser history (default: true) */
   replace?: boolean;
-  /** Minimum length before writing the query param; shorter values clear it */
   minLength?: number;
-  /** Auto focus the input on mount */
   autoFocus?: boolean;
-  /** Show a small clear (×) button when there’s text */
   showClear?: boolean;
-  /** aria-label for accessibility */
   ariaLabel?: string;
-  /** Callback whenever the debounced value is pushed to URL */
   onDebouncedChange?: (value: string) => void;
 };
 
