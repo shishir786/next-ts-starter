@@ -31,7 +31,7 @@ export default async function Layout({ children }: ChildrenProps) {
 
           {/* Main content */}
           <main className="flex-1">
-            <div className="@container/main min-h-screen w-full px-4 py-4 lg:px-6">
+            <div className="@container/main min-h-screen w-full p-4 lg:p-6">
               {children}
             </div>
           </main>

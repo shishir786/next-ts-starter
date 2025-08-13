@@ -1,10 +1,24 @@
-'use client';
+"use client";
 
-import { DndContext, KeyboardSensor, MouseSensor, TouchSensor, UniqueIdentifier, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { IconGripVertical, IconPlus } from '@tabler/icons-react';
+import {
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  UniqueIdentifier,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { IconGripVertical, IconPlus } from "@tabler/icons-react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -23,21 +37,37 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import { useSearchParams } from 'next/navigation';
-import React from 'react';
-import { toast } from 'sonner';
+} from "@tanstack/react-table";
+import { useSearchParams } from "next/navigation";
+import React from "react";
+import { toast } from "sonner";
 
-import { Checkbox } from '../ui/checkbox';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
+import { Checkbox } from "../ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
 
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import Link from 'next/link';
-import SearchBar from '../global/search-bar';
-import DataTableColumnSelector from './data-table-column-selector';
-import DataTableFooter from './data-table-footer';
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import Link from "next/link";
+import SearchBar from "../global/search-bar";
+import { Skeleton } from "../ui/skeleton";
+import DataTableColumnSelector from "./data-table-column-selector";
+import DataTableFooter from "./data-table-footer";
 
 // Base interface for records that can be used in the DataTable
 export interface BaseRecord {
@@ -57,7 +87,13 @@ function DragHandle({ id }: DragHandleProps) {
   });
 
   return (
-    <Button {...attributes} {...listeners} variant="ghost" size="icon" className="text-muted-foreground size-7 hover:bg-transparent">
+    <Button
+      {...attributes}
+      {...listeners}
+      variant="ghost"
+      size="icon"
+      className="text-muted-foreground size-7 hover:bg-transparent"
+    >
       <IconGripVertical className="text-muted-foreground size-3" />
       <span className="sr-only">Drag to reorder</span>
     </Button>
@@ -70,8 +106,13 @@ interface DraggableRowProps<T extends BaseRecord> {
 }
 
 // Pass uniqueIdProperty directly to DraggableRow
-function DraggableRow<T extends BaseRecord>({ row, uniqueIdProperty }: DraggableRowProps<T>) {
-  const id = (row.original[uniqueIdProperty] || row.original._id || row.original.id) as UniqueIdentifier;
+function DraggableRow<T extends BaseRecord>({
+  row,
+  uniqueIdProperty,
+}: DraggableRowProps<T>) {
+  const id = (row.original[uniqueIdProperty] ||
+    row.original._id ||
+    row.original.id) as UniqueIdentifier;
 
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id,
@@ -79,16 +120,19 @@ function DraggableRow<T extends BaseRecord>({ row, uniqueIdProperty }: Draggable
 
   return (
     <TableRow
-      data-state={row.getIsSelected() && 'selected'}
+      data-state={row.getIsSelected() && "selected"}
       data-dragging={isDragging}
       ref={setNodeRef}
       className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
       style={{
         transform: CSS.Transform.toString(transform),
         transition,
-      }}>
+      }}
+    >
       {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+        <TableCell key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </TableCell>
       ))}
     </TableRow>
   );
@@ -108,34 +152,53 @@ interface DataTableProps<T extends BaseRecord> {
     href: string;
     label: string;
   };
+  actionModal?: {
+    form: React.ReactNode;
+    label: string;
+    title?: string;
+  };
 }
 
 export default function DataTable<T extends BaseRecord>({
   data: initialData = [],
   columns = [],
-  pageSize = 10,
+  pageSize = 20,
   pageIndex = 0,
   total = 0,
-  uniqueIdProperty = '_id',
+  uniqueIdProperty = "_id",
   defaultSort = [],
   enableRowSelection = true,
   onDeleteMany,
   actionLink,
+  actionModal,
 }: DataTableProps<T>) {
   // States for table functionality
   const [data, setData] = React.useState<T[]>(initialData);
+  const [isInitialLoad, setIsInitialLoad] = React.useState(true);
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+
   const [sorting, setSorting] = React.useState<SortingState>(defaultSort);
   const searchParams = useSearchParams();
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: pageIndex ? pageIndex - 1 : 0,
-    pageSize: Number(searchParams.get('pageSize')) || pageSize,
+    pageSize: Number(searchParams?.get("pageSize") ?? "20"),
   });
 
+  const [isTableLoading, setIsTableLoading] = React.useState(false);
+  const prevPageIndex = React.useRef(pagination.pageIndex);
+
   const sortableId = React.useId();
-  const sensors = useSensors(useSensor(MouseSensor, {}), useSensor(TouchSensor, {}), useSensor(KeyboardSensor, {}));
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {}),
+  );
 
   // Store uniqueIdProperty in a ref to avoid it being undefined during renders
   const uniqueIdRef = React.useRef(uniqueIdProperty);
@@ -166,7 +229,7 @@ export default function DataTable<T extends BaseRecord>({
     },
     getRowId: (row) => {
       const id = row[uniqueIdRef.current] || row._id || row.id;
-      return id ? id.toString() : '';
+      return id ? id.toString() : "";
     },
     enableRowSelection,
     onRowSelectionChange: setRowSelection,
@@ -183,7 +246,10 @@ export default function DataTable<T extends BaseRecord>({
   });
 
   // Handle drag and drop reordering
-  function handleDragEnd(event: { active: { id: UniqueIdentifier }; over: { id: UniqueIdentifier } | null }) {
+  function handleDragEnd(event: {
+    active: { id: UniqueIdentifier };
+    over: { id: UniqueIdentifier } | null;
+  }) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
       setData((dataTwo) => {
@@ -204,7 +270,9 @@ export default function DataTable<T extends BaseRecord>({
 
   // Update pagination when URL params change
   React.useEffect(() => {
-    const urlPageSize = Number(searchParams.get('pageSize'));
+    if (!searchParams) return;
+
+    const urlPageSize = Number(searchParams.get("pageSize"));
     if (urlPageSize) {
       setPagination((prev) => ({
         ...prev,
@@ -218,11 +286,31 @@ export default function DataTable<T extends BaseRecord>({
   // Update selectedIds when rowSelection changes
   React.useEffect(() => {
     const selectedRows = table.getSelectedRowModel().rows;
-    const ids = selectedRows.map((row) => row.original._id).filter((id): id is string => typeof id === 'string');
+    const ids = selectedRows
+      .map((row) => row.original._id)
+      .filter((id): id is string => typeof id === "string");
     setSelectedIds(ids);
   }, [rowSelection, table]);
 
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  React.useEffect(() => {
+    const pageChanged = pagination.pageIndex !== prevPageIndex.current;
+    if (!isInitialLoad && pageChanged) {
+      setIsTableLoading(true);
+      prevPageIndex.current = pagination.pageIndex;
+    }
+  }, [pagination.pageIndex, isInitialLoad]);
+
+  React.useEffect(() => {
+    if (isTableLoading) {
+      const timeout = setTimeout(() => setIsTableLoading(false), 400);
+      return () => clearTimeout(timeout);
+    }
+  }, [isTableLoading]);
+
+  React.useEffect(() => {
+    setData(initialData || []);
+    setIsInitialLoad(false);
+  }, [initialData]);
 
   const handleDeleteMany = async () => {
     if (selectedIds.length === 0 || !onDeleteMany) return;
@@ -233,24 +321,50 @@ export default function DataTable<T extends BaseRecord>({
         setIsDialogOpen(false);
       }),
       {
-        loading: 'Deleting selected items...',
-        success: 'Items deleted successfully',
-        error: 'Failed to delete items',
+        loading: "Deleting selected items...",
+        success: "Items deleted successfully",
+        error: (err) => {
+          return err?.message || "Failed to delete category";
+        },
       },
     );
   };
 
   return (
-    <Tabs defaultValue="outline" className="w-full flex-col justify-start gap-6 overflow-hidden">
+    <Tabs
+      defaultValue="outline"
+      className="w-full flex-col justify-start gap-6"
+    >
       <div className="flex flex-wrap justify-center gap-4 sm:flex-row sm:items-center sm:justify-normal sm:gap-2">
         <DataTableColumnSelector table={table} />
         {actionLink && (
           <Link
             href={actionLink.href}
-            className="bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 flex h-8 items-center gap-1.5 rounded-md border px-3 text-sm font-medium shadow-xs has-[>svg]:px-2.5">
+            className="bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 flex h-8 items-center gap-1.5 rounded-md border px-3 text-sm font-medium shadow-xs has-[>svg]:px-2.5"
+          >
             <IconPlus size={16} />
             <span>{actionLink.label}</span>
           </Link>
+        )}
+        {actionModal && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant={"outline"}>
+                <IconPlus size={16} />
+                <span>{actionModal.label}</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh] max-w-[600px] overflow-y-auto">
+              {actionModal.title && (
+                <DialogHeader>
+                  <DialogTitle className="text-center text-2xl">
+                    {actionModal.title}
+                  </DialogTitle>
+                </DialogHeader>
+              )}
+              {actionModal.form}
+            </DialogContent>
+          </Dialog>
         )}
         <SearchBar />
         {onDeleteMany && selectedIds.length > 0 && (
@@ -264,16 +378,21 @@ export default function DataTable<T extends BaseRecord>({
               <DialogHeader>
                 <DialogTitle>Delete Selected Items</DialogTitle>
                 <DialogDescription>
-                  Are you sure you want to delete {selectedIds.length} selected item{selectedIds.length > 1 ? 's' : ''}? This action cannot be undone and will permanently remove the selected item
-                  {selectedIds.length > 1 ? 's' : ''} from the database.
+                  Are you sure you want to delete {selectedIds.length} selected
+                  item{selectedIds.length > 1 ? "s" : ""}? This action cannot be
+                  undone and will permanently remove the selected item
+                  {selectedIds.length > 1 ? "s" : ""} from the database.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button variant="destructive" onClick={handleDeleteMany}>
-                  Yes, Delete {selectedIds.length > 1 ? 'All' : 'It'}
+                  Yes, Delete {selectedIds.length > 1 ? "All" : "It"}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -281,31 +400,63 @@ export default function DataTable<T extends BaseRecord>({
         )}
       </div>
 
-      <TabsContent value="outline" className="relative flex flex-col gap-4 overflow-auto rounded-lg">
+      <TabsContent
+        value="outline"
+        className="relative flex flex-col gap-4 overflow-auto rounded-lg"
+      >
         <div className="bg-light overflow-hidden rounded-lg border dark:bg-transparent">
-          <DndContext collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis]} onDragEnd={handleDragEnd} sensors={sensors} id={sortableId}>
+          <DndContext
+            collisionDetection={closestCenter}
+            modifiers={[restrictToVerticalAxis]}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}
+            id={sortableId}
+          >
             <Table>
               <TableHeader className="bg-light-bg/50 dark:bg-dark-hover sticky top-0 z-10">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
                       <TableHead key={header.id} colSpan={header.colSpan}>
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     ))}
                   </TableRow>
                 ))}
               </TableHeader>
               <TableBody className="**:data-[slot=table-cell]:first:w-8">
-                {table.getRowModel().rows?.length ? (
-                  <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
+                {isTableLoading ? (
+                  Array.from({ length: pagination.pageSize }).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell colSpan={columns.length}>
+                        <Skeleton className="h-5 w-full" />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : data.length > 0 ? (
+                  <SortableContext
+                    items={dataIds}
+                    strategy={verticalListSortingStrategy}
+                  >
                     {table.getRowModel().rows.map((row) => (
-                      <DraggableRow key={row.id} row={row} uniqueIdProperty={uniqueIdRef.current} />
+                      <DraggableRow
+                        key={row.id}
+                        row={row}
+                        uniqueIdProperty={uniqueIdRef.current}
+                      />
                     ))}
                   </SortableContext>
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
                       No results.
                     </TableCell>
                   </TableRow>
@@ -314,7 +465,6 @@ export default function DataTable<T extends BaseRecord>({
             </Table>
           </DndContext>
         </div>
-
         <DataTableFooter table={table} pageSize={pageSize} total={total} />
       </TabsContent>
     </Tabs>
@@ -324,7 +474,7 @@ export default function DataTable<T extends BaseRecord>({
 // Helper function to create a drag column
 export function createDragColumn<T extends BaseRecord>() {
   return {
-    id: 'drag',
+    id: "drag",
     header: () => null,
     cell: ({ row }: { row: Row<T> }) => {
       // Access the id directly from the row original data
@@ -337,20 +487,27 @@ export function createDragColumn<T extends BaseRecord>() {
 // Helper function to create a selection checkbox column
 export function createSelectionColumn<T extends BaseRecord>() {
   return {
-    id: 'select',
+    id: "select",
     header: ({ table }: { table: TableInstance<T> }) => (
       <div className="flex items-center justify-center">
         <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
-          className={'border-[#e9e4e4] dark:border-[#383838]'}
+          className={"border-[#e9e4e4] dark:border-[#383838]"}
         />
       </div>
     ),
     cell: ({ row }: { row: Row<T> }) => (
       <div className="flex items-center justify-center">
-        <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
       </div>
     ),
     enableSorting: false,
