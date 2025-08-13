@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 type LogoProps = {
   className?: string;
@@ -7,8 +7,8 @@ type LogoProps = {
 
 export const Logo = ({ className }: LogoProps) => {
   return (
-    <Link href="/" className={cn('text-xl font-bold', className)}>
-      Next.ts Start
+    <Link href="/" className={cn("text-xl font-bold", className)}>
+      Next.ts Starter
     </Link>
   );
 };

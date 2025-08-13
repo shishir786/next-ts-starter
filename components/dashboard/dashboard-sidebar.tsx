@@ -1,10 +1,18 @@
-'use client';
+"use client";
 
-import { SignedIn, UserButton } from '@clerk/nextjs';
-import { LayoutDashboard, MoreVerticalIcon, Newspaper, Package, ShoppingCart, Tags, Users } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Suspense } from 'react';
+import { SignedIn, UserButton } from "@clerk/nextjs";
+import {
+  LayoutDashboard,
+  MoreVerticalIcon,
+  Newspaper,
+  Package,
+  ShoppingCart,
+  Tags,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 
 // import AdditionalInfoForm from "./instructor/AdditionalInfoForm";
 // import BecomeInstructorForm from "./student/BecomeInstructorForm";
@@ -21,8 +29,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from '@/components/ui/sidebar';
-import { Logo } from '../global/logo';
+} from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
+import { Logo } from "../global/logo";
 
 // Map of icon names to their corresponding components
 const iconMap = {
@@ -42,14 +51,18 @@ export interface DashboardSidebarProps {
   icon: IconMapKey;
 }
 
-export function DashboardSidebar({ menu = [] }: { menu: DashboardSidebarProps[] }) {
+export function DashboardSidebar({
+  menu = [],
+}: {
+  menu: DashboardSidebarProps[];
+}) {
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
   // Function to determine if a menu item is active
   const isActive = (url: string) => {
     if (!url) return false;
     // Exact match for dashboard routes
-    if (['/customer', '/admin'].includes(url)) {
+    if (["/customer", "/admin"].includes(url)) {
       return pathname === url;
     }
     // Partial match for other routes
@@ -71,15 +84,23 @@ export function DashboardSidebar({ menu = [] }: { menu: DashboardSidebarProps[] 
 
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton className={`dark:hover:bg-dark-lite hover:bg-gray-100 ${isActive(item?.url) ? 'dark:bg-dark-lite bg-gray-100' : ''}`} asChild>
+                    <SidebarMenuButton
+                      className={cn(
+                        "hover:bg-accent hover:text-accent-foreground",
+                        isActive(item?.url) &&
+                          "bg-accent text-accent-foreground",
+                      )}
+                      asChild
+                    >
                       <Link
                         onClick={() => {
                           if (window.innerWidth < 768) {
                             toggleSidebar();
                           }
                         }}
-                        href={item?.url || '#'}
-                        className="">
+                        href={item?.url || "#"}
+                        className=""
+                      >
                         {IconComponent ? <IconComponent /> : null}
                         <span>{item.title}</span>
                       </Link>
@@ -92,16 +113,22 @@ export function DashboardSidebar({ menu = [] }: { menu: DashboardSidebarProps[] 
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+        <SidebarMenuButton
+          size="lg"
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+        >
           <SignedIn>
-            <Suspense fallback={<div className="h-10 w-10 rounded-full">loading</div>}>
+            <Suspense
+              fallback={<div className="h-10 w-10 rounded-full">loading</div>}
+            >
               <UserButton
                 showName={true}
                 appearance={{
                   elements: {
-                    userButtonBox: 'flex !flex-row-reverse items-center gap-2',
+                    userButtonBox: "flex !flex-row-reverse items-center gap-2",
                   },
-                }}>
+                }}
+              >
                 {/* Only show Additional Info section for instructors */}
                 {/* {role === "instructor" && (
                 <UserButton.UserProfilePage

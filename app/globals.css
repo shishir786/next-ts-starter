@@ -1,16 +1,16 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
+/* @theme {
   --color-accent-main: #0a5f38;
   --color-accent-hover: #0d7a48;
   --color-red: #ef4444;
   --color-light: #f8fafc;
   --color-dark-deep: #0a0a0a;
   --color-dark-lite: #111111;
-}
+} */
 
 @theme inline {
   --color-background: var(--background);

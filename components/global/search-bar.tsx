@@ -1,35 +1,39 @@
-'use client';
+"use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { cn, formUrlQuery, removeKeysFromQuery } from '@/lib/utils';
-import { Input } from '../ui/input';
+import { cn, formUrlQuery, removeKeysFromQuery } from "@/lib/utils";
+import { Input } from "../ui/input";
 
 type SearchBarProps = {
   placeholder?: string;
   className?: string;
 };
 
-export default function SearchBar({ placeholder = 'Search by Title', className }: SearchBarProps) {
+export default function SearchBar({
+  placeholder = "Search by Title",
+  className,
+}: SearchBarProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      let newUrl = '';
+      let newUrl = "";
+      if (!searchParams) return null;
 
       if (searchQuery) {
         newUrl = formUrlQuery({
           params: searchParams.toString(),
-          key: 'search',
+          key: "search",
           value: searchQuery,
         });
       } else {
         newUrl = removeKeysFromQuery({
           params: searchParams.toString(),
-          keysToRemove: ['search'],
+          keysToRemove: ["search"],
         });
       }
       router.push(newUrl, { scroll: false });
@@ -39,8 +43,14 @@ export default function SearchBar({ placeholder = 'Search by Title', className }
   }, [searchQuery, searchParams, router]);
 
   return (
-    <div className="bg-light flex items-center gap-2 overflow-hidden rounded-md dark:bg-transparent">
-      <Input type="text" placeholder={placeholder} value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className={cn(className)} />
+    <div className="bg-light font-grotesk flex items-center gap-2 overflow-hidden rounded-md dark:bg-transparent">
+      <Input
+        type="text"
+        placeholder={placeholder}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className={cn(className)}
+      />
     </div>
   );
 }

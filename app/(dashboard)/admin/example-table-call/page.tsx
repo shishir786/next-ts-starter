@@ -1,9 +1,11 @@
-import DataTable from '@/components/dashboard/data-table';
-import { adminUsersColumns } from '@/components/dashboard/table-columns';
-import { getUsersForAdmin } from '@/lib/actions/user.action';
-import { DashboardSearchParamsPros } from '@/types';
+import DataTable from "@/components/dashboard/data-table";
+import { adminUsersColumns } from "@/components/dashboard/table-columns";
+import { getUsersForAdmin } from "@/lib/actions/user.action";
+import { DashboardSearchParamsPros } from "@/types";
 
-export default async function Customers({ searchParams }: DashboardSearchParamsPros) {
+export default async function Customers({
+  searchParams,
+}: DashboardSearchParamsPros) {
   const { pageSize, pageIndex, search } = await searchParams;
 
   const { users, pagination } = await getUsersForAdmin({
@@ -13,16 +15,16 @@ export default async function Customers({ searchParams }: DashboardSearchParamsP
   });
 
   return (
-    <section>
+    <>
       <DataTable
-        pageIndex={Number(pageIndex || '1')}
-        pageSize={Number(pageSize || '10')}
+        pageIndex={Number(pageIndex || "1")}
+        pageSize={Number(pageSize || "10")}
         total={pagination?.totalItems || 0}
         data={users || []}
         columns={adminUsersColumns || []}
         uniqueIdProperty="_id"
         enableRowSelection={false}
       />
-    </section>
+    </>
   );
 }

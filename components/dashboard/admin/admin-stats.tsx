@@ -1,35 +1,42 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowDownIcon, ArrowUpIcon, DollarSign, FileText, Package, ShoppingCart } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ArrowDownIcon,
+  ArrowUpIcon,
+  DollarSign,
+  FileText,
+  Package,
+  ShoppingCart,
+} from "lucide-react";
 
 export async function AdminStats() {
   const stats = [
     {
-      title: 'Total Revenue',
+      title: "Total Revenue",
       value: `৳ 500`,
       description: `20% from last month`,
       icon: DollarSign,
-      trend: 'Trending up',
+      trend: "Trending up",
     },
     {
-      title: 'Total Products',
+      title: "Total Products",
       value: 200,
       description: `10% from last month`,
       icon: Package,
-      trend: 'Stable',
+      trend: "Stable",
     },
     {
-      title: 'Total Orders',
+      title: "Total Orders",
       value: 50,
       description: `60% from last month`,
       icon: ShoppingCart,
-      trend: 'Trending up',
+      trend: "Trending up",
     },
     {
-      title: 'Total Blogs',
+      title: "Total Blogs",
       value: 5,
       description: `25% from last month`,
       icon: FileText,
-      trend: 'Trending down',
+      trend: "Trending down",
     },
   ];
 
@@ -45,19 +52,32 @@ export async function AdminStats() {
             <div className="text-2xl font-bold">{stat.value}</div>
             <p className="text-muted-foreground text-xs">{stat.description}</p>
             <div className="mt-2 flex items-center text-xs">
-              {stat.trend === 'Up' || stat.trend === 'Trending up' || stat.trend === 'Strong order growth' || stat.trend === 'Content growing' ? (
+              {stat.trend === "Up" ||
+              stat.trend === "Trending up" ||
+              stat.trend === "Strong order growth" ||
+              stat.trend === "Content growing" ? (
                 <ArrowUpIcon className="mr-1 h-4 w-4 text-green-500" />
-              ) : stat.trend === 'Down' || stat.trend === 'Trending down' || stat.trend === 'Order decline' || stat.trend === 'Content decline' ? (
+              ) : stat.trend === "Down" ||
+                stat.trend === "Trending down" ||
+                stat.trend === "Order decline" ||
+                stat.trend === "Content decline" ? (
                 <ArrowDownIcon className="mr-1 h-4 w-4 text-red-500" />
               ) : null}
               <span
                 className={
-                  stat.trend === 'Up' || stat.trend === 'Trending up' || stat.trend === 'Strong order growth' || stat.trend === 'Content growing'
-                    ? 'text-green-500'
-                    : stat.trend === 'Down' || stat.trend === 'Trending down' || stat.trend === 'Order decline' || stat.trend === 'Content decline'
-                    ? 'text-red-500'
-                    : 'text-muted-foreground'
-                }>
+                  stat.trend === "Up" ||
+                  stat.trend === "Trending up" ||
+                  stat.trend === "Strong order growth" ||
+                  stat.trend === "Content growing"
+                    ? "text-green-500"
+                    : stat.trend === "Down" ||
+                        stat.trend === "Trending down" ||
+                        stat.trend === "Order decline" ||
+                        stat.trend === "Content decline"
+                      ? "text-red-500"
+                      : "text-muted-foreground"
+                }
+              >
                 {stat.trend}
               </span>
             </div>
